@@ -32,7 +32,7 @@ final class GoogleDriveConnectorTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->spy = new SpyIngestionContract();
+        $this->spy = new SpyIngestionContract;
         $this->app->instance(ConnectorIngestionContract::class, $this->spy);
         Storage::fake('local');
 

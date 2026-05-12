@@ -340,6 +340,7 @@ class GoogleDriveConnector extends BaseConnector
                     if ($driveFileId !== '' && $this->softDeleteByMetadataKey($installation, 'drive_file_id', $driveFileId)) {
                         $removed++;
                     }
+
                     continue;
                 }
 
@@ -367,6 +368,7 @@ class GoogleDriveConnector extends BaseConnector
             $next = $payload['nextPageToken'] ?? null;
             if (is_string($next)) {
                 $newToken = $next;
+
                 continue;
             }
 
@@ -530,15 +532,15 @@ class GoogleDriveConnector extends BaseConnector
         $owners = $this->extractFileOwners($file);
         $folderPath = $this->resolveFolderPath($file);
         $driveFields = [
-            'file_id'        => $fileId,
-            'mime_type'      => $mimeType,
-            'native_mime'    => $mimeType,
-            'modified_time'  => $file['modifiedTime'] ?? null,
-            'owner'          => $owners[0] ?? null,
-            'owners'         => $owners,
-            'folder_path'    => $folderPath,
-            'revision_id'    => $file['headRevisionId'] ?? null,
-            'shared_with'    => $file['permissionIds'] ?? [],
+            'file_id' => $fileId,
+            'mime_type' => $mimeType,
+            'native_mime' => $mimeType,
+            'modified_time' => $file['modifiedTime'] ?? null,
+            'owner' => $owners[0] ?? null,
+            'owners' => $owners,
+            'folder_path' => $folderPath,
+            'revision_id' => $file['headRevisionId'] ?? null,
+            'shared_with' => $file['permissionIds'] ?? [],
         ];
 
         // Route Office-family Drive docs through the source-aware vendor
@@ -548,7 +550,7 @@ class GoogleDriveConnector extends BaseConnector
         // token because the registry dispatches on it.
         $effectiveMime = $this->resolveEffectiveMime($mimeType, $persistedMime);
 
-        $sourceMeta = (new SourceAwareMetadataBuilder())->build(
+        $sourceMeta = (new SourceAwareMetadataBuilder)->build(
             base: [
                 'connector' => $this->key(),
                 'installation_id' => $installation->id,
@@ -594,12 +596,14 @@ class GoogleDriveConnector extends BaseConnector
             $name = $owner['displayName'] ?? null;
             if (is_string($email) && $email !== '') {
                 $out[] = $email;
+
                 continue;
             }
             if (is_string($name) && $name !== '') {
                 $out[] = $name;
             }
         }
+
         return $out;
     }
 
@@ -621,12 +625,13 @@ class GoogleDriveConnector extends BaseConnector
             array_map(static fn ($p) => is_string($p) ? $p : null, $parents),
             static fn ($p): bool => $p !== null,
         ));
+
         return $clean === [] ? null : implode('/', $clean);
     }
 
     /**
      * @param  string  $googleNativeMime  The MIME Drive reports for the source file.
-     * @param  string  $persistedMime     The MIME the body was persisted as (export target).
+     * @param  string  $persistedMime  The MIME the body was persisted as (export target).
      */
     private function resolveEffectiveMime(string $googleNativeMime, string $persistedMime): string
     {
@@ -637,6 +642,7 @@ class GoogleDriveConnector extends BaseConnector
             // working for non-Office Drive files.
             return $persistedMime;
         }
+
         return $vendor;
     }
 
