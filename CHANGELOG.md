@@ -14,6 +14,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - `padosoft/askmydocs-connector-base` `^1.3`.
 
+### Migration note
+
+An installation with no explicit `project_key` no longer ingests into the synthetic `connector-google-drive` project; it now resolves to the host's `kb.ingest.default_project` (or the literal `default`). To preserve the previous behaviour for an existing install, set the installation's `project_key` to `connector-google-drive`, or set the host config `kb.ingest.default_project=connector-google-drive`.
+
 ## v1.0.0 — Initial release (2026-05-12)
 
 Initial extraction from the AskMyDocs v4.5 inline connector framework into a standalone, reusable Laravel package.
