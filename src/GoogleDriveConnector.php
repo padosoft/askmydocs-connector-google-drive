@@ -206,8 +206,7 @@ class GoogleDriveConnector extends BaseConnector
         }
 
         $installation = $this->loadInstallation($installationId);
-        $config = (array) ($installation->config_json ?? []);
-        $projectKey = (string) ($config['project_key'] ?? ('connector-'.$this->key()));
+        $projectKey = $this->resolveProjectKey($installation);
 
         $added = 0;
         $errors = [];
@@ -298,8 +297,7 @@ class GoogleDriveConnector extends BaseConnector
         }
 
         $installation = $this->loadInstallation($installationId);
-        $config = (array) ($installation->config_json ?? []);
-        $projectKey = (string) ($config['project_key'] ?? ('connector-'.$this->key()));
+        $projectKey = $this->resolveProjectKey($installation);
 
         $provider = $this->providerConfig();
         $apiBase = $provider['api_base'] ?? 'https://www.googleapis.com/drive/v3';

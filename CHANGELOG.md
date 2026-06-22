@@ -4,6 +4,16 @@ All notable changes to `padosoft/askmydocs-connector-google-drive` will be docum
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v1.1.0 — Multi-account project binding (2026-06-22)
+
+### Changed
+
+- Adopt `padosoft/askmydocs-connector-base` v1.3 `resolveProjectKey()` for project resolution in both `syncFull()` and `syncIncremental()`. The connector now resolves the target project from the installation's explicit `project_key`, falling back to the host's `kb.ingest.default_project` config (itself defaulting to the literal `default`). This replaces the old synthetic `connector-google-drive` default, enabling multiple installations of the same connector to bind to distinct projects.
+
+### Requires
+
+- `padosoft/askmydocs-connector-base` `^1.3`.
+
 ## v1.0.0 — Initial release (2026-05-12)
 
 Initial extraction from the AskMyDocs v4.5 inline connector framework into a standalone, reusable Laravel package.
