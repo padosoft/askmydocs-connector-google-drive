@@ -244,6 +244,67 @@ final class GoogleDriveConnectorTest extends TestCase
         $this->assertSame('spt-100', $vault->getExtraKey($installation->id, 'changes_page_token'));
     }
 
+    public function test_sync_full_routes_ingestion_to_installation_project_key(): void
+    {
+        $installation = $this->makeInstallation();
+        $installation->update(['project_key' => 'team-alpha']);
+        $this->seedActiveCredential($installation->id);
+
+        Http::fake([
+            'www.googleapis.com/drive/v3/files?*' => Http::response([
+                'files' => [
+                    [
+                        'id' => 'file-md-1',
+                        'name' => 'notes.md',
+                        'mimeType' => 'text/markdown',
+                        'modifiedTime' => '2026-05-01T10:00:00Z',
+                    ],
+                ],
+            ], 200),
+            'www.googleapis.com/drive/v3/files/file-md-1?*' => Http::response('# Notes', 200, [
+                'content-type' => 'text/markdown',
+            ]),
+            'www.googleapis.com/drive/v3/changes/startPageToken' => Http::response([
+                'startPageToken' => 'spt-100',
+            ], 200),
+        ]);
+
+        $this->connector()->syncFull($installation->id);
+
+        $this->assertCount(1, $this->spy->dispatches);
+        $this->assertSame('team-alpha', $this->spy->dispatches[0]['projectKey']);
+    }
+
+    public function test_sync_full_falls_back_to_default_project_when_unbound(): void
+    {
+        $installation = $this->makeInstallation();
+        $this->seedActiveCredential($installation->id);
+
+        Http::fake([
+            'www.googleapis.com/drive/v3/files?*' => Http::response([
+                'files' => [
+                    [
+                        'id' => 'file-md-1',
+                        'name' => 'notes.md',
+                        'mimeType' => 'text/markdown',
+                        'modifiedTime' => '2026-05-01T10:00:00Z',
+                    ],
+                ],
+            ], 200),
+            'www.googleapis.com/drive/v3/files/file-md-1?*' => Http::response('# Notes', 200, [
+                'content-type' => 'text/markdown',
+            ]),
+            'www.googleapis.com/drive/v3/changes/startPageToken' => Http::response([
+                'startPageToken' => 'spt-100',
+            ], 200),
+        ]);
+
+        $this->connector()->syncFull($installation->id);
+
+        $this->assertCount(1, $this->spy->dispatches);
+        $this->assertSame('default', $this->spy->dispatches[0]['projectKey']);
+    }
+
     public function test_sync_incremental_with_no_cursor_falls_back_to_full(): void
     {
         $installation = $this->makeInstallation();
