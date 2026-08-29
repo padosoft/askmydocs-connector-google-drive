@@ -62,6 +62,8 @@ This package is the smallest possible surface for shipping that integration:
 - 🏢 **Per-tenant isolated** — every credential read and ingestion dispatch is scoped to the active `TenantContext`.
 - 🧪 **Test-friendly** — `Http::fake()` feature tests for the connector; opt-in live test that hits `www.googleapis.com/drive/v3` when `CONNECTOR_GOOGLE_DRIVE_LIVE=1`.
 
+- **Provenance declaration** — implements `DeclaresProvenance` (connector-base ^1.5), labelling ingested content `TrustedInternal`: a Drive the organisation administers, so whoever wrote a document had to be granted the ability to write it. A statement about *authorship*, not about correctness — see the IMAP connector for the contrasting case.
+
 ## 🚀 AI vibe-coding pack included
 
 This package was built with a vibe-coding pack of Claude Code skills and rules (`.claude/` directory in the parent AskMyDocs repo) that codify the architectural invariants — the IoC contract that keeps this package standalone-agnostic, the Drive API quirks the connector navigates, the multi-mime routing rules, the `changes.list` cursor lifecycle.
